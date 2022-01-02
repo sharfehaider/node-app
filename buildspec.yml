@@ -20,7 +20,7 @@ phases:
      # - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG_SEMANTIC-$IMAGE_TAG_GIT_HASH $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
 
   post_build:
-    commands: aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/w5v7x7o5
+    commands: #aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/w5v7x7o5
       - echo Build completed on `date`
       - echo Pushing the Docker image...
       - docker push public.ecr.aws/w5v7x7o5/nodeimage:latest
