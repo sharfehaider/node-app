@@ -6,7 +6,7 @@ phases:
       - echo Logging in to Amazon ECR...
       -  aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/w5v7x7o5
       #- aws ecr get-login --region us-east-1 | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-      - IMAGE_TAG_SEMANTIC=latest_test
+      #- IMAGE_TAG_SEMANTIC=latest_test
       #- IMAGE_TAG_GIT_HASH=$(echo ${CODEBUILD_RESOLVED_SOURCE_VERSION} | cut -c 1-7)
 
   build:
@@ -14,13 +14,15 @@ phases:
       - echo Build started on `date`
       - echo Building the Docker image...
       - docker build -t nodeimage .
+      - docker tag nodeimage:latest public.ecr.aws/w5v7x7o5/nodeimage:latest
       #- docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/w5v7x7o5_SEMANTIC-$IMAGE_TAG_GIT_HASH .
-      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG_SEMANTIC-$IMAGE_TAG_GIT_HASH $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG_SEMANTIC-$IMAGE_TAG_GIT_HASH
-      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG_SEMANTIC-$IMAGE_TAG_GIT_HASH $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
+      #- docker tag $IMAGE_REPO_NAME:$IMAGE_TAG_SEMANTIC-$IMAGE_TAG_GIT_HASH $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG_SEMANTIC-$IMAGE_TAG_GIT_HASH
+     # - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG_SEMANTIC-$IMAGE_TAG_GIT_HASH $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
 
   post_build:
-    commands:
+    commands: aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/w5v7x7o5
       - echo Build completed on `date`
       - echo Pushing the Docker image...
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG_SEMANTIC-$IMAGE_TAG_GIT_HASH
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
+      - docker push public.ecr.aws/w5v7x7o5/nodeimage:latest
+      #- docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG_SEMANTIC-$IMAGE_TAG_GIT_HASH
+      #- docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
